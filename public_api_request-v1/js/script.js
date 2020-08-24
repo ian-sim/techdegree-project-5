@@ -1,5 +1,5 @@
 const gallery = document.getElementById("gallery");
-const usersURL = "https://randomuser.me/api/?results=12";
+const usersURL = "https://randomuser.me/api/?results=12&nat=us,au,gb,ca";
 
 // Fetch function to request and parse data
 function fetchData(url) {
@@ -10,14 +10,14 @@ function fetchData(url) {
 			console.log("Oops, looks like there was a problem!", error)
 		);
 }
-
+insertSearch();
 // Request profile data and generate cards
 fetchData(usersURL).then((data) => generateProfiles(data.results));
 
 // Function to generate profiles with data from fetch request
 function generateProfiles(data) {
 	let profilesHTML = ``;
-	console.log(data);
+
 	for (let i = 0; i < data.length; i++) {
 		profilesHTML += `<div class="card">
         <div class="card-img-container">
@@ -31,6 +31,7 @@ function generateProfiles(data) {
     </div>`;
 	}
 	gallery.innerHTML = profilesHTML;
+
 	// Select all profile cards and add event listeners
 	const profileCards = document.querySelectorAll("div.card");
 	const modal = document.querySelectorAll("div.modal-container");
@@ -38,39 +39,44 @@ function generateProfiles(data) {
 	for (let i = 0; i < profileCards.length; i++) {
 		profileCards[i].addEventListener("click", () => {
 			if (modal.length === 0) {
-				gallery.innerHTML += `<div class="modal-container">
-            <div class="modal">
-                <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
-                <div class="modal-info-container">
-                    <img class="modal-img" src="${
-											data[i].picture.medium
-										}" alt="profile picture">
-                    <h3 id="name" class="modal-name cap">${
-											data[i].name.first
-										} ${data[i].name.last}</h3>
-                    <p class="modal-text">${data[i].email}</p>
-                    <p class="modal-text cap">${data[i].location.city}</p>
-                    <hr>
-                    <p class="modal-text">${formatPhoneNumber(data[i].cell)}</p>
-                    <p class="modal-text">${data[i].location.street.number} ${
-					data[i].location.street.name
-				}, ${data[i].location.city}, ${data[i].location.state} ${
-					data[i].location.postcode
-				}</p>
-                    <p class="modal-text">Birthday: ${formatBirthday(
-											data[i].dob.date
-										)}</p>
-                </div>
-            </div>`;
-
-				// Select close button and add listener
-				const closeBtn = document.querySelector("#modal-close-btn");
-				const modalContainer = document.querySelector("div.modal-container");
-
-				closeBtn.addEventListener("click", () => {
-					gallery.removeChild(modalContainer);
-				});
+				gallery.insertAdjacentHTML(
+					"afterend",
+					`<div class="modal-container">
+                <div class="modal">
+                    <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
+                    <div class="modal-info-container">
+                        <img class="modal-img" src="${
+													data[i].picture.medium
+												}" alt="profile picture">
+                        <h3 id="name" class="modal-name cap">${
+													data[i].name.first
+												} ${data[i].name.last}</h3>
+                        <p class="modal-text">${data[i].email}</p>
+                        <p class="modal-text cap">${data[i].location.city}</p>
+                        <hr>
+                        <p class="modal-text">${formatPhoneNumber(
+													data[i].cell
+												)}</p>
+                        <p class="modal-text">${
+													data[i].location.street.number
+												} ${data[i].location.street.name}, ${
+						data[i].location.city
+					}, ${data[i].location.state} ${data[i].location.postcode}</p>
+                        <p class="modal-text">Birthday: ${formatBirthday(
+													data[i].dob.date
+												)}</p>
+                    </div>
+                </div>`
+				);
 			}
+			// Select close button and add listener
+			const closeBtn = document.querySelector("button.modal-close-btn");
+			const modalContainer = document.querySelector("div.modal-container");
+			const parent = modalContainer.parentNode;
+
+			closeBtn.addEventListener("click", () => {
+				parent.removeChild(modalContainer);
+			});
 		});
 	}
 }
@@ -84,19 +90,21 @@ function checkStatus(response) {
 	}
 }
 
+// Create function to format phone number data correctly
 function formatPhoneNumber(number) {
-	//remove any non-digit characters
+	// Remove any non-digit characters
 	number = number.replace(/[^\d]/g, "");
 
-	//check if number length equals to 10
+	// Check if number length equals to 10
 	if (number.length === 10) {
-		//reformat and return phone number
+		// Reformat and return phone number
 		return number.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
 	}
-
+	// Return empty string if phone number data is incorrect
 	return "";
 }
 
+// Create function to format birthday data correctly
 function formatBirthday(birthday) {
 	// Select birth date substring only
 	let formattedBirthday = birthday.substr(0, 10);
@@ -105,4 +113,13 @@ function formatBirthday(birthday) {
 	formattedBirthday = formattedBirthday.replace(/[-]/g, "");
 	// Return formatted birthday with slashes
 	return formattedBirthday.replace(/(\d{4})(\d{2})(\d{2})/, "$2/$3/$1");
+}
+
+// Create function to insert search bar
+function insertSearch() {
+	const searchContainer = document.querySelector("div.search-container");
+	searchContainer.innerHTML = `<form action="#" method="get">
+    <input type="search" id="search-input" class="search-input" placeholder="Search...">
+    <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
+</form>`;
 }
