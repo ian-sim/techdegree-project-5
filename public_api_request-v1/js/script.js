@@ -1,7 +1,11 @@
 const gallery = document.getElementById("gallery");
 const usersURL = "https://randomuser.me/api/?results=12&nat=us,au,gb,ca";
 
-// Fetch function to request and parse data
+/**
+ * Function to fetch data, check the status of response and parse data from response
+ * @param {string} url - the url of the site data is requested from
+ * @returns {promise} returns a promise containing the parsed data
+ */
 function fetchData(url) {
 	return fetch(url)
 		.then(checkStatus)
@@ -15,7 +19,11 @@ insertSearch();
 // Request profile data and generate cards
 fetchData(usersURL).then((data) => generateProfiles(data.results));
 
-// function to create modal window
+/**
+ * Creates new modal window with the data from the selected profile card
+ * @param {object} data - parsed data from fetch request
+ * @param {object} employeeInfo - Information of the selected employee profile
+ */
 function createModal(data, employeeInfo) {
 	gallery.insertAdjacentHTML(
 		"afterend",
@@ -76,7 +84,10 @@ function createModal(data, employeeInfo) {
 	});
 }
 
-// Function to generate profiles with data from fetch request
+/**
+ * Generates employee profile cards with data parsed from fetch request
+ * @param {object} data - parsed data from fetch request
+ */
 function generateProfiles(data) {
 	let profilesHTML = ``;
 
@@ -107,7 +118,11 @@ function generateProfiles(data) {
 	}
 }
 
-// Function to check response status
+/**
+ * Checks status of the response from fetch request
+ * @param {response} response - the response from the fetch request
+ * @returns {promise} returns either a resolved or rejected promise based on the fetch request
+ */
 function checkStatus(response) {
 	if (response.ok) {
 		return Promise.resolve(response);
@@ -118,7 +133,11 @@ function checkStatus(response) {
 	}
 }
 
-// Create function to format phone number data correctly
+/**
+ * Takes phone number from request and formats it correctly
+ * @param {string} number - number stored in data from request
+ * @returns {string} returns formatted number if correct data input else returns an empty string
+ */
 function formatPhoneNumber(number) {
 	// Remove any non-digit characters
 	number = number.replace(/[^\d]/g, "");
@@ -132,7 +151,11 @@ function formatPhoneNumber(number) {
 	return "";
 }
 
-// Create function to format birthday data correctly
+/**
+ * Takes birthday from request and formats correctly
+ * @param {string} birthday - birthday data from request
+ * @returns {promise} returns a promise containing the parsed data
+ */
 function formatBirthday(birthday) {
 	// Select birth date substring only
 	let formattedBirthday = birthday.substr(0, 10);
@@ -145,7 +168,9 @@ function formatBirthday(birthday) {
 
 // THE BELOW CODE IS FOR THE EXCEEDS EXPECTATIONS REQUIREMENTS :)
 
-// Create function to insert search bar
+/**
+ * Inserts search bar html dynamically
+ */
 function insertSearch() {
 	const searchContainer = document.querySelector("div.search-container");
 	searchContainer.innerHTML = `<form action="#" method="get">
@@ -154,16 +179,23 @@ function insertSearch() {
 </form>`;
 }
 
-// Create function to compare input in search to employees and display any results found with a match
+/**
+ * Compares user input in search bar to employee profile names and displays profiles with match
+ * @param {HTMLElement} searchInput - the search bar input field
+ */
+// select search input field and search button
 const searchInput = document.getElementById("search-input");
 const searchButton = document.querySelector("#search-submit");
 function searchName(searchInput) {
+	// select displayed employee profiles
 	const users = document.querySelectorAll("div.card");
+	// if search bar input empty then display all results
 	if (searchInput.value.length === 0) {
 		for (let j = 0; j < users.length; j++) {
 			users[j].style.display = "";
 		}
 	} else {
+		// filter results based on user input
 		for (let i = 0; i < users.length; i++) {
 			users[i].style.display = "none";
 			const name = users[
