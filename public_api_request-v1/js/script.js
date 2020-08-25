@@ -74,12 +74,18 @@ function createModal(data, employeeInfo) {
 		if (index + 1 < 12) {
 			modalContainer.remove();
 			createModal(data, data[index + 1]);
+		} else {
+			modalContainer.remove();
+			createModal(data, data[0]);
 		}
 	});
 	prevButton.addEventListener("click", () => {
 		if (index > 0) {
 			modalContainer.remove();
 			createModal(data, data[index - 1]);
+		} else {
+			modalContainer.remove();
+			createModal(data, data[11]);
 		}
 	});
 }
@@ -220,6 +226,10 @@ searchInput.addEventListener("keyup", () => {
 });
 
 // Event listener for click in input field to search and display results, if any
-searchInput.addEventListener("click", () => {
-	searchName(searchInput);
+searchInput.addEventListener("search", () => {
+	if (searchInput.value.length === 0) {
+		searchName(searchInput);
+	} else {
+		preventDefault();
+	}
 });
